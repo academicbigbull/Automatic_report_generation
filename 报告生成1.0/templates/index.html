@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成报告</title>
+</head>
+<body>
+    <h1>生成报告</h1>
+    <form action="/generate" method="post">
+        <label for="name">姓名:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="date">日期:</label>
+        <input type="date" id="date" name="date" required><br><br>
+
+        <label for="data">数据 (JSON 格式):</label><br>
+        <textarea id="data" name="data" rows="10" cols="50" required>
+[
+    {"姓名": "张三", "年龄": 25, "性别": "男"},
+    {"姓名": "李四", "年龄": 30, "性别": "女"},
+    {"姓名": "王五", "年龄": 28, "性别": "男"}
+]
+        </textarea><br><br>
+
+        <button type="submit">生成报告</button>
+    </form>
+</body>
+</html>
