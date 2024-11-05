@@ -3,27 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: #f4f4f4; /* 浅灰色背景 */
+            font-family: 'Arial', sans-serif; /* 设置字体 */
+            margin: 0;
+            padding: 0;
+            color: #333; /* 文本颜色 */
+        }
+        #head {
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 30px 0;
+            color: #333; /* 标题颜色 */
+        }
+       .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 600px; /* 最大宽度 */
+            margin: auto; /* 水平居中 */
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+            background-color: white; /* 容器背景色 */
+            border-radius: 8px; /* 圆角边框 */
+        }
+        form {
+            width: 100%;
+        }
+        label {
+            margin-bottom: 5px;
+            display: block; /* 使label独占一行 */
+            color: #555; /* label颜色 */
+        }
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px; /* 输入框间距 */
+            border: 1px solid #ddd; /* 边框颜色 */
+            border-radius: 4px; /* 圆角边框 */
+            box-sizing: border-box; /* 边框包含在宽度内 */
+        }
+        textarea {
+            resize: vertical; /* 允许垂直调整大小 */
+        }
+       .btn {
+            background-color: #5cb85c; /* 按钮背景色 */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease; /* 过渡效果 */
+        }
+       .btn:hover {
+            background-color: #4cae4c; /* 鼠标悬停时的背景色 */
+        }
+    </style>
     <title>生成报告</title>
 </head>
 <body>
-    <h1>生成报告</h1>
-    <form action="/generate" method="post">
-        <label for="name">姓名:</label>
-        <input type="text" id="name" name="name" required><br><br>
+    <div id="head">生成报告</div>
+    <div class="container">
+        <form action="/generate" method="post" enctype="multipart/form-data">
+            <label for="name">姓名:</label>
+            <input type="text" id="name" name="name" required><br>
 
-        <label for="date">日期:</label>
-        <input type="date" id="date" name="date" required><br><br>
+            <label for="date">日期:</label>
+            <input type="date" id="date" name="date" required><br>
 
-        <label for="data">数据 (JSON 格式):</label><br>
-        <textarea id="data" name="data" rows="10" cols="50" required>
+            <label for="data">数据 (JSON 格式):</label>
+            <br>
+            <textarea id="data" name="data" rows="10" cols="50" required>
 [
     {"姓名": "张三", "年龄": 25, "性别": "男"},
     {"姓名": "李四", "年龄": 30, "性别": "女"},
     {"姓名": "王五", "年龄": 28, "性别": "男"}
 ]
-        </textarea><br><br>
+            </textarea>
 
-        <button type="submit">生成报告</button>
-    </form>
+            <label for="image">图片:</label>
+            <input type="file" id="image" name="image"><br><br>
+
+            <button class="btn" type="submit">生成报告</button>
+        </form>
+    </div>
 </body>
 </html>
