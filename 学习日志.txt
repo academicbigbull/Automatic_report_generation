@@ -215,3 +215,189 @@ if __name__ == '__main__':
     </form>
 </body>
 </html>
+
+
+#11.3
+在后端添加了插入图片进报告的功能
+from flask import Flask, render_template, request, send_file
+from docx import Document
+from docx.shared import Pt, Inches
+from datetime import datetime
+import pandas as pd
+import io
+import os
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return render_template('index1.html')
+
+@app.route('/generate', methods=['POST'])
+def generate_report():
+    try:
+        # 获取表单数据
+        name = request.form['name']
+        date = request.form['date']
+        data = request.form['data']
+        image_file = request.files['image']
+
+        # 将字符串数据转换为 JSON 格式
+        import json
+        data = json.loads(data)
+
+        # 处理数据
+        df = pd.DataFrame(data)
+
+        # 创建一个新的 Word 文档
+        doc = Document()
+
+        # 添加标题
+        title = doc.add_heading('报告', level=1)
+        title.alignment = 1  # 居中对齐
+
+        # 添加作者和日期
+        doc.add_paragraph(f'作者: {name}')
+        doc.add_paragraph(f'日期: {date}')
+
+        # 添加表格
+        table = doc.add_table(rows=1, cols=len(df.columns))
+        hdr_cells = table.rows[0].cells
+        for i, column in enumerate(df.columns):
+            hdr_cells[i].text = column
+
+        for _, row in df.iterrows():
+            row_cells = table.add_row().cells
+            for i, value in enumerate(row):
+                row_cells[i].text = str(value)
+
+        doc.add_paragraph()#表格中间与图片空行
+
+        # 如果有上传的图片，则插入图片并设置居中
+        if image_file:
+            image_format = image_file.filename.split('.')[-1].lower()
+            if image_format in ['jpg', 'jpeg', 'png']:
+                image_stream = io.BytesIO(image_file.read())
+                picture = doc.add_picture(image_stream, width=Inches(4))
+                last_paragraph = doc.paragraphs[-1]
+                last_paragraph.alignment = 1
+            else:
+                return "Unsupported image format. Please upload a JPG or PNG image.", 400
+
+        # 保存文档到内存中
+        filename = f'report_{datetime.now().strftime("%Y%m%d_%H%M%S")}.docx'
+        doc.save(filename)
+        with open(filename, 'rb') as f:
+            file_data = f.read()
+        os.remove(filename)
+
+        # 返回生成的文件，设置适当的响应头和文件名
+        return send_file(io.BytesIO(file_data), as_attachment=True, download_name=filename, mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    except Exception as e:
+        # 打印错误信息并返回一个友好的错误消息给用户
+        print(f"An error occurred: {e}")
+        return "An error occurred while generating the report.", 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+#------------------------------------------------------------------------------------------------------------------------------------
+11.5
+优化了一下前端页面
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: #f4f4f4; /* 浅灰色背景 */
+            font-family: 'Arial', sans-serif; /* 设置字体 */
+            margin: 0;
+            padding: 0;
+            color: #333; /* 文本颜色 */
+        }
+        #head {
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 30px 0;
+            color: #333; /* 标题颜色 */
+        }
+       .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 600px; /* 最大宽度 */
+            margin: auto; /* 水平居中 */
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+            background-color: white; /* 容器背景色 */
+            border-radius: 8px; /* 圆角边框 */
+        }
+        form {
+            width: 100%;
+        }
+        label {
+            margin-bottom: 5px;
+            display: block; /* 使label独占一行 */
+            color: #555; /* label颜色 */
+        }
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px; /* 输入框间距 */
+            border: 1px solid #ddd; /* 边框颜色 */
+            border-radius: 4px; /* 圆角边框 */
+            box-sizing: border-box; /* 边框包含在宽度内 */
+        }
+        textarea {
+            resize: vertical; /* 允许垂直调整大小 */
+        }
+       .btn {
+            background-color: #5cb85c; /* 按钮背景色 */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease; /* 过渡效果 */
+        }
+       .btn:hover {
+            background-color: #4cae4c; /* 鼠标悬停时的背景色 */
+        }
+    </style>
+    <title>生成报告</title>
+</head>
+<body>
+    <div id="head">生成报告</div>
+    <div class="container">
+        <form action="/generate" method="post" enctype="multipart/form-data">
+            <label for="name">姓名:</label>
+            <input type="text" id="name" name="name" required><br>
+
+            <label for="date">日期:</label>
+            <input type="date" id="date" name="date" required><br>
+
+            <label for="data">数据 (JSON 格式):</label>
+            <br>
+            <textarea id="data" name="data" rows="10" cols="50" required>
+[
+    {"姓名": "张三", "年龄": 25, "性别": "男"},
+    {"姓名": "李四", "年龄": 30, "性别": "女"},
+    {"姓名": "王五", "年龄": 28, "性别": "男"}
+]
+            </textarea>
+
+            <label for="image">图片:</label>
+            <input type="file" id="image" name="image"><br><br>
+
+            <button class="btn" type="submit">生成报告</button>
+        </form>
+    </div>
+</body>
+</html>
