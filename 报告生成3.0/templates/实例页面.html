@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>报告生成</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .container {
+      max-width: 600px;
+      margin: 80px auto;
+      padding: 30px;
+      background-color: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    h1 {
+      color: #343a40;
+      font-size: 32px;
+      margin-bottom: 40px;
+    }
+    label {
+      font-weight: 600;
+      color: #495057;
+    }
+    input[type="text"], select {
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 20px;
+      transition: border-color 0.2s ease-in-out;
+      font-size: 16px;
+    }
+    input[type="color"], input[type="file"] {
+      padding: 10px;
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      transition: border-color 0.2s ease-in-out;
+      cursor: pointer;
+    }
+    .checkbox-group {
+      margin-bottom: 25px;
+    }
+    button {
+      background-color: #007bff;
+      border-color: #007bff;
+      color: #fff;
+      font-weight: 600;
+      padding: 12px 25px;
+      border-radius: 8px;
+      transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #0069d9;
+      border-color: #0062cc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>报告模板自定义</h1>
+    <form id="reportForm">
+      <div class="form-group">
+        <label for="titleFont">标题字体：</label>
+        <select id="titleFont" class="form-control" name="titleFont">
+          <option value="宋体">宋体</option>
+          <option value="Times New Roman">Times New Roman</option>
+          <option value="Arial">Arial</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="titleColor">标题颜色：</label>
+        <input type="color" id="titleColor" class="form-control" name="titleColor" value="#RRGGBB">
+      </div>
+      <div class="form-group">
+        <label for="titleSize">标题大小：</label>
+        <input type="text" id="titleSize" class="form-control" name="titleSize">
+      </div>
+      <div class="form-group">
+        <label for="reporter">报告人：</label>
+        <input type="text" id="reporter" class="form-control" name="reporter">
+      </div>
+      <div class="form-group">
+        <label for="dataFile">上传数据文件（支持 JSON 或 XML）：</label>
+        <input type="file" id="dataFile" accept=".json,.xml" name="dataFile">
+      </div>
+      <div class="checkbox-group">
+        <label>
+          <input type="checkbox" id="generateSummary" name="generateSummary"> 是否需要生成摘要
+        </label>
+      </div>
+      <div class="checkbox-group">
+        <label>
+          <input type="checkbox" id="generateTable" name="generateTable"> 是否生成表格
+        </label>
+      </div>
+      <div class="checkbox-group">
+        <label>
+          <input type="checkbox" id="generateImage" name="generateImage"> 是否生成图表
+        </label>
+      </div>
+      <button type="button" onclick="submitForm()" class="btn btn-primary">提交</button>
+    </form>
+  </div>
+
+  <script>
+    function submitForm() {
+    const form = document.getElementById('reportForm');
+    const formData = new FormData(form);
+
+    // 设置复选框的值为 'true' 或 'false'
+    formData.set('generateSummary', document.getElementById('generateSummary').checked ? 'true' : 'false');
+    formData.set('generateTable', document.getElementById('generateTable').checked ? 'true' : 'false');
+    formData.set('generateImage', document.getElementById('generateImage').checked ? 'true' : 'false');
+
+    fetch('/generate', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => { throw new Error(text); });
+        }
+        return response.blob();
+    })
+    .then(blob => {
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'custom_report.docx';
+        link.click();
+    })
+    .catch(error => {
+        alert(`Error: ${error.message}`);
+    });
+    }
+  </script>
+</body>
+</html>
