@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  <style>
+    body {
+      font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+      margin: 40px;
+    }
+    h1 {
+      font-size: {{ title_size }}pt;
+      color: {{ title_color }};
+    }
+    h2 {
+      font-size: {{ subtitle_size }}pt;
+      color: {{ subtitle_color }};
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid black;
+    }
+    th, td {
+      padding: 8px;
+      text-align: center;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="font-family: {{ title_font }}; font-size: {{ title_size }}pt; color: {{ title_color }};">{{ title }}</h1>
+  <p>报告人: {{ reporter }}</p>
+
+  {% if generate_summary %}
+  <h2>摘要</h2>
+  <p>{{ summary_text }}</p>
+  {% endif %}
+
+  {% if generate_table %}
+  <h2>数据表格</h2>
+  <table>
+    <thead>
+      <tr>
+        {% for column in columns %}
+        <th>{{ column }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in data %}
+      <tr>
+        {% for value in row %}
+        <td>{{ value }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  {% if generate_image %}
+  <h2>图表</h2>
+  <img src="{{ image_path }}" alt="数据图表">
+  {% endif %}
+
+  <!-- 这里可以根据需要添加其他部分，如结论、参考文献等 -->
+</body>
+</html>
