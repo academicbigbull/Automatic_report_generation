@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>报告</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        h1 {
+            font-size: {{ title_size }}pt;
+            color: {{ title_color }};
+            font-family: {{ title_font }};
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ title_text }}</h1>
+    <p>报告人: {{ reporter }}</p>
+
+    {% if generate_summary %}
+    <h2>摘要</h2>
+    <p>【ID】的类别分布：{% for key, value in id_distribution.items() %} {{ key }}: {{ value }} 个记录 {% endfor %}</p>
+    <p>【Name】的类别分布：{% for key, value in name_distribution.items() %} {{ key }}: {{ value }} 个记录 {% endfor %}</p>
+    <p>【Age】的类别分布：{% for key, value in age_distribution.items() %} {{ key }}: {{ value }} 个记录 {% endfor %}</p>
+    <p>【Department】的类别分布：{% for key, value in department_distribution.items() %} {{ key }}: {{ value }} 个记录 {% endfor %}</p>
+    <p>【Salary】的类别分布：{% for key, value in salary_distribution.items() %} {{ key }}: {{ value }} 个记录 {% endfor %}</p>
+    <p>本次数据集包含 {{ total_records }} 条记录，涵盖了 {{ total_fields }} 个字段。</p>
+    {% endif %}
+
+    {% if generate_table %}
+    <h2>数据表格</h2>
+    <table>
+        <thead>
+            <tr>
+                {% for column in table_columns %}
+                <th>{{ column }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in table_data %}
+            <tr>
+                {% for value in row %}
+                <td>{{ value }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</body>
+</html>

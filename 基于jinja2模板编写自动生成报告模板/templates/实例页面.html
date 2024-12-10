@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>报告生成</title>
+</head>
+<body>
+    <h1>生成报告</h1>
+    <form action="/generate" method="POST" enctype="multipart/form-data">
+        <!-- 报告标题样式 -->
+        <div>
+            <label for="titleFont">标题字体:</label>
+            <input type="text" id="titleFont" name="titleFont" value="宋体" required>
+        </div>
+        <div>
+            <label for="titleSize">标题字体大小:</label>
+            <input type="number" id="titleSize" name="titleSize" value="12" required>
+        </div>
+        <div>
+            <label for="titleColor">标题颜色:</label>
+            <input type="color" id="titleColor" name="titleColor" value="#000000">
+        </div>
+
+        <!-- 报告人 -->
+        <div>
+            <label for="reporter">报告人:</label>
+            <input type="text" id="reporter" name="reporter" required>
+        </div>
+
+        <!-- 需求选择 -->
+        <div>
+            <label for="generateSummary">是否生成摘要:</label>
+            <input type="checkbox" id="generateSummary" name="generateSummary" value="true">
+        </div>
+        <div>
+            <label for="generateTable">是否生成数据表格:</label>
+            <input type="checkbox" id="generateTable" name="generateTable" value="true">
+        </div>
+        <div>
+            <label for="generateImage">是否生成图表:</label>
+            <input type="checkbox" id="generateImage" name="generateImage" value="true">
+        </div>
+
+        <!-- 上传数据文件 -->
+        <div>
+            <label for="dataFile">上传数据文件 (JSON/XML):</label>
+            <input type="file" id="dataFile" name="dataFile" accept=".json,.xml" required>
+        </div>
+
+        <!-- 提交按钮 -->
+        <button type="submit">生成报告</button>
+    </form>
+</body>
+</html>
